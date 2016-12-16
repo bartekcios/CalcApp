@@ -11,6 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = CalcApp
 TEMPLATE = app
 CONFIG += c++11
+VERSION = 1.0.0
 
 SOURCES += main.cpp\
         mainwindow.cpp \

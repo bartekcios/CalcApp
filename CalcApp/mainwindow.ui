@@ -421,7 +421,7 @@
             <height>90</height>
            </rect>
           </property>
-          <layout class="QHBoxLayout" name="horizontalLayout">
+          <layout class="QHBoxLayout" name="horizontalLayoutNumeralSystems">
            <item>
             <layout class="QVBoxLayout" name="verticalLayoutResultSize">
              <item>
@@ -515,7 +515,7 @@
      </item>
     </layout>
    </widget>
-   <widget class="QWidget" name="">
+   <widget class="QWidget" name="layoutWidget">
     <property name="geometry">
      <rect>
       <x>580</x>
@@ -524,12 +524,12 @@
       <height>341</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="verticalLayout">
+    <layout class="QVBoxLayout" name="verticalLayoutMemory">
      <item>
       <widget class="QListWidget" name="listWidgetMemory"/>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <layout class="QHBoxLayout" name="horizontalLayoutMemoryButtons">
        <item>
         <widget class="QPushButton" name="pushButtonFromMemoryToCalculator">
          <property name="text">
