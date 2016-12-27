@@ -15,10 +15,13 @@ VERSION = 1.0.0
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    calc.cpp
+    calc.cpp \
+    memory.cpp
 
 HEADERS  += mainwindow.h \
     calc.h \
-    tst_calcapptesttest.h
+    tst_calcapptesttest.h \
+    memory.h \
+    commontypedefs.h
 
 FORMS    += mainwindow.ui

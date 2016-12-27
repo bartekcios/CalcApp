@@ -2,14 +2,13 @@
 #define CALC_H
 #include <QString>
 #include <QVector>
+#include "commontypedefs.h"
+#include "memory.h"
 
 class Calc
 {
     // interface
     public:
-    // typedefs
-
-    typedef uint64_t ResultType_t;
     enum eNumeralSystem
     {
         NS_BIN = 2,
@@ -103,16 +102,15 @@ class Calc
     void calculateRoL(void);
     void calculateRoR(void);
     void calculateNot(void);
+    void changeSign(void);
     // memory
     void addValueToMemory();
-    void removeValueFromMemory(const uint8_t a_uIndex);
-    void increaseValueFromMemory(const uint8_t a_uIndex);
-    void decreaseValueFromMemory(const uint8_t a_uIndex);
-    uint8_t getMemorySize(void);
-    QString getValueFromMemory(const uint8_t a_uIndex);
-    void changeSign(void);
-    void copyNumberFromMemory(const ResultType_t a_uMemoryVectorIndex);
-
+    void increaseValueFromMemory(const MemoryVectorIndex_t a_uIndex);
+    void decreaseValueFromMemory(const MemoryVectorIndex_t a_uIndex);
+    MemoryVectorIndex_t getMemorySize(void);
+    QString getValueFromMemory(const MemoryVectorIndex_t a_uIndex);
+    void copyNumberFromMemory(const MemoryVectorIndex_t a_uMemoryVectorIndex);
+    bool removeValueFromMemory(const MemoryVectorIndex_t a_uIndex);
 
 private:
     //typedefs
@@ -123,12 +121,12 @@ private:
     };
 
     //members
+    Memory m_oMemory;
     eNumeralSystem m_eNumeralSystem;
     eWordSize m_eWordSize;
     eState m_eState;
     QVector<eOperation> m_veOperations;
     QVector<ResultType_t> m_vuNumbers;
-    QVector<ResultType_t> m_vuMemory;
     ResultType_t m_uResult;
     static constexpr char m_acValues[16] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
                                                     //BitsSize|       PositiveMask
@@ -148,6 +146,7 @@ private:
     void calculatePriorityOperation(const eOperation a_eStartOperation, const eOperation a_eEndOperation, const uint8_t a_uDeepestLeftBracketIndex, uint8_t & a_uDeepestRightBracketIndex, uint8_t a_uNumberInBracketIndex, uint8_t &uLeftBracketsCounter);
     QString convertOperationToQString(const eOperation a_eOperation);
     bool validateBrackets(void);
+    ResultType_t castToResultType(const Calc::eWordSize a_eWordSize, const ByteWordSize_t a_uByteSource, const WordWordSize_t a_uWordSource, const DWordWordSize_t a_uDWordSource, const QWordWordSize_t a_uQWordSource);
 };
 
 #endif // CALC_H

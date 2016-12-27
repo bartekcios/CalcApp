@@ -387,7 +387,7 @@ void MainWindow::setHexButtons(void)
 void MainWindow::updateMemoryValues(void)
 {
     m_pUI->listWidgetMemory->clear();
-    for(int i=0;i<m_calc.getMemorySize();++i)
+    for(MemoryVectorIndex_t i=0;i<m_calc.getMemorySize();++i)
     {
         m_pUI->listWidgetMemory->addItem(m_calc.getValueFromMemory(i));
     }

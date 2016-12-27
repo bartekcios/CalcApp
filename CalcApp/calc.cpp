@@ -192,41 +192,14 @@ bool Calc::changeWordSize(const Calc::eWordSize a_eWordSize)
                 ResultType_t uVal = m_asWordsSizes[eOldWordSize].m_uMask - m_vuNumbers.last();
                 ++uVal;
 
-                uint8_t uVal8 = (uint8_t)0u - (uint8_t)uVal;
-                uint16_t uVal16 = (uint16_t)0u - (uint16_t)uVal;
-                uint32_t uVal32 = (uint32_t)0u - (uint32_t)uVal;
-                uint64_t uVal64 = (uint64_t)0u - (uint64_t)uVal;
+                ByteWordSize_t uVal8 = (ByteWordSize_t)0u - (ByteWordSize_t)uVal;
+                WordWordSize_t uVal16 = (WordWordSize_t)0u - (WordWordSize_t)uVal;
+                DWordWordSize_t uVal32 = (DWordWordSize_t)0u - (DWordWordSize_t)uVal;
+                QWordWordSize_t uVal64 = (QWordWordSize_t)0u - (QWordWordSize_t)uVal;
 
 
                 // cast to 64 bits
-                switch(a_eWordSize)
-                {
-                case WS_BYTE:
-                {
-                    m_vuNumbers.last() = (ResultType_t)uVal8;
-                    break;
-                }
-                case WS_WORD:
-                {
-                    m_vuNumbers.last() = (ResultType_t)uVal16;
-                    break;
-                }
-                case WS_DWORD:
-                {
-                    m_vuNumbers.last() = (ResultType_t)uVal32;
-                    break;
-                }
-                case WS_QWORD:
-                {
-                    m_vuNumbers.last() = (ResultType_t)uVal64;
-                    break;
-                }
-                default:
-                {
-                    // nothing to do
-                    qWarning() << "[WRN]Calc::calculateOperation: not supported word size: " << m_eWordSize;
-                }
-                }
+                m_vuNumbers.last() = castToResultType(a_eWordSize, uVal8, uVal16, uVal32, uVal64);
             }
             else
             {
@@ -406,7 +379,7 @@ QString Calc::convert(const Calc::eNumeralSystem a_eNumeralSystem, const ResultT
     return qsRetVal;
 }
 
-uint8_t Calc::countBits(const Calc::ResultType_t a_uNumber)
+uint8_t Calc::countBits(const ResultType_t a_uNumber)
 {
     uint8_t uRetVal = 0;
     ResultType_t uTempVal = a_uNumber;
@@ -476,10 +449,10 @@ uint8_t Calc::calculateBracket(void)
 bool Calc::calculateOperation(const uint8_t a_uLeftOperandIndex, const uint8_t a_uRightOperandIndex, const uint8_t a_uOperationIndex, const uint8_t a_uLeftBracketsCounter)
 {
     bool fRetVal = false;
-    uint8_t uResult8 = 0u;
-    uint16_t uResult16 = 0u;
-    uint32_t uResult32 = 0u;
-    uint64_t uResult64 = 0u;
+    ByteWordSize_t uResult8 = 0u;
+    WordWordSize_t uResult16 = 0u;
+    DWordWordSize_t uResult32 = 0u;
+    QWordWordSize_t uResult64 = 0u;
     ResultType_t uResult = 0u;
 
     if((0u == a_uLeftBracketsCounter ||
@@ -495,10 +468,10 @@ bool Calc::calculateOperation(const uint8_t a_uLeftOperandIndex, const uint8_t a
         {
             if(0u < m_vuNumbers[a_uRightOperandIndex])
             {
-                uResult8  = (uint8_t) m_vuNumbers[a_uLeftOperandIndex] / (uint8_t)m_vuNumbers[a_uRightOperandIndex];
-                uResult16 = (uint16_t)m_vuNumbers[a_uLeftOperandIndex] / (uint16_t)m_vuNumbers[a_uRightOperandIndex];
-                uResult32 = (uint32_t)m_vuNumbers[a_uLeftOperandIndex] / (uint32_t)m_vuNumbers[a_uRightOperandIndex];
-                uResult64 = (uint64_t)m_vuNumbers[a_uLeftOperandIndex] / (uint64_t)m_vuNumbers[a_uRightOperandIndex];
+                uResult8  = (ByteWordSize_t) m_vuNumbers[a_uLeftOperandIndex] / (ByteWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+                uResult16 = (WordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] / (WordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+                uResult32 = (DWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] / (DWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+                uResult64 = (QWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] / (QWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
                 fRetVal = true;
             }
             else
@@ -509,10 +482,10 @@ bool Calc::calculateOperation(const uint8_t a_uLeftOperandIndex, const uint8_t a
         }
         case O_MULTIPLICATION:
         {
-            uResult8  = (uint8_t) m_vuNumbers[a_uLeftOperandIndex] * (uint8_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult16 = (uint16_t)m_vuNumbers[a_uLeftOperandIndex] * (uint16_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult32 = (uint32_t)m_vuNumbers[a_uLeftOperandIndex] * (uint32_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult64 = (uint64_t)m_vuNumbers[a_uLeftOperandIndex] * (uint64_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult8  = (ByteWordSize_t) m_vuNumbers[a_uLeftOperandIndex] * (ByteWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult16 = (WordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] * (WordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult32 = (DWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] * (DWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult64 = (QWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] * (QWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
             fRetVal = true;
             break;
         }
@@ -520,10 +493,10 @@ bool Calc::calculateOperation(const uint8_t a_uLeftOperandIndex, const uint8_t a
         {
             if(0u < m_vuNumbers[a_uRightOperandIndex])
             {
-                uResult8  = (uint8_t) m_vuNumbers[a_uLeftOperandIndex] % (uint8_t)m_vuNumbers[a_uRightOperandIndex];
-                uResult16 = (uint16_t)m_vuNumbers[a_uLeftOperandIndex] % (uint16_t)m_vuNumbers[a_uRightOperandIndex];
-                uResult32 = (uint32_t)m_vuNumbers[a_uLeftOperandIndex] % (uint32_t)m_vuNumbers[a_uRightOperandIndex];
-                uResult64 = (uint64_t)m_vuNumbers[a_uLeftOperandIndex] % (uint64_t)m_vuNumbers[a_uRightOperandIndex];
+                uResult8  = (ByteWordSize_t) m_vuNumbers[a_uLeftOperandIndex] % (ByteWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+                uResult16 = (WordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] % (WordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+                uResult32 = (DWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] % (DWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+                uResult64 = (QWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] % (QWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
                 fRetVal = true;
             }
             else
@@ -535,64 +508,64 @@ bool Calc::calculateOperation(const uint8_t a_uLeftOperandIndex, const uint8_t a
             // medium priority
         case O_LSH:
         {
-            uResult8  = (uint8_t) m_vuNumbers[a_uLeftOperandIndex] << (uint8_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult16 = (uint16_t)m_vuNumbers[a_uLeftOperandIndex] << (uint16_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult32 = (uint32_t)m_vuNumbers[a_uLeftOperandIndex] << (uint32_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult64 = (uint64_t)m_vuNumbers[a_uLeftOperandIndex] << (uint64_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult8  = (ByteWordSize_t) m_vuNumbers[a_uLeftOperandIndex] << (ByteWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult16 = (WordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] << (WordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult32 = (DWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] << (DWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult64 = (QWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] << (QWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
             fRetVal = true;
             break;
         }
         case O_RSH:
         {
-            uResult8  = (uint8_t) m_vuNumbers[a_uLeftOperandIndex] >> (uint8_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult16 = (uint16_t)m_vuNumbers[a_uLeftOperandIndex] >> (uint16_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult32 = (uint32_t)m_vuNumbers[a_uLeftOperandIndex] >> (uint32_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult64 = (uint64_t)m_vuNumbers[a_uLeftOperandIndex] >> (uint64_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult8  = (ByteWordSize_t) m_vuNumbers[a_uLeftOperandIndex] >> (ByteWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult16 = (WordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] >> (WordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult32 = (DWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] >> (DWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult64 = (QWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] >> (QWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
             fRetVal = true;
             break;
         }
         case O_OR:
         {
-            uResult8  = (uint8_t) m_vuNumbers[a_uLeftOperandIndex] | (uint8_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult16 = (uint16_t)m_vuNumbers[a_uLeftOperandIndex] | (uint16_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult32 = (uint32_t)m_vuNumbers[a_uLeftOperandIndex] | (uint32_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult64 = (uint64_t)m_vuNumbers[a_uLeftOperandIndex] | (uint64_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult8  = (ByteWordSize_t) m_vuNumbers[a_uLeftOperandIndex] | (ByteWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult16 = (WordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] | (WordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult32 = (DWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] | (DWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult64 = (QWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] | (QWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
             fRetVal = true;
             break;
         }
         case O_XOR:
         {
-            uResult8  = (uint8_t) m_vuNumbers[a_uLeftOperandIndex] ^ (uint8_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult16 = (uint16_t)m_vuNumbers[a_uLeftOperandIndex] ^ (uint16_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult32 = (uint32_t)m_vuNumbers[a_uLeftOperandIndex] ^ (uint32_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult64 = (uint64_t)m_vuNumbers[a_uLeftOperandIndex] ^ (uint64_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult8  = (ByteWordSize_t) m_vuNumbers[a_uLeftOperandIndex] ^ (ByteWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult16 = (WordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] ^ (WordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult32 = (DWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] ^ (DWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult64 = (QWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] ^ (QWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
             fRetVal = true;
             break;
         }
         case O_AND:
         {
-            uResult8  = (uint8_t) m_vuNumbers[a_uLeftOperandIndex] & (uint8_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult16 = (uint16_t)m_vuNumbers[a_uLeftOperandIndex] & (uint16_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult32 = (uint32_t)m_vuNumbers[a_uLeftOperandIndex] & (uint32_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult64 = (uint64_t)m_vuNumbers[a_uLeftOperandIndex] & (uint64_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult8  = (ByteWordSize_t) m_vuNumbers[a_uLeftOperandIndex] & (ByteWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult16 = (WordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] & (WordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult32 = (DWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] & (DWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult64 = (QWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] & (QWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
             fRetVal = true;
             break;
         }
         case O_PLUS:
         {
-            uResult8  = (uint8_t) m_vuNumbers[a_uLeftOperandIndex] + (uint8_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult16 = (uint16_t)m_vuNumbers[a_uLeftOperandIndex] + (uint16_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult32 = (uint32_t)m_vuNumbers[a_uLeftOperandIndex] + (uint32_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult64 = (uint64_t)m_vuNumbers[a_uLeftOperandIndex] + (uint64_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult8  = (ByteWordSize_t) m_vuNumbers[a_uLeftOperandIndex] + (ByteWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult16 = (WordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] + (WordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult32 = (DWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] + (DWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult64 = (QWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] + (QWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
             fRetVal = true;
             break;
         }
         case O_MINUS:
         {
-            uResult8  = (uint8_t) m_vuNumbers[a_uLeftOperandIndex] - (uint8_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult16 = (uint16_t)m_vuNumbers[a_uLeftOperandIndex] - (uint16_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult32 = (uint32_t)m_vuNumbers[a_uLeftOperandIndex] - (uint32_t)m_vuNumbers[a_uRightOperandIndex];
-            uResult64 = (uint64_t)m_vuNumbers[a_uLeftOperandIndex] - (uint64_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult8  = (ByteWordSize_t) m_vuNumbers[a_uLeftOperandIndex] - (ByteWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult16 = (WordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] - (WordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult32 = (DWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] - (DWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
+            uResult64 = (QWordWordSize_t)m_vuNumbers[a_uLeftOperandIndex] - (QWordWordSize_t)m_vuNumbers[a_uRightOperandIndex];
             fRetVal = true;
             break;
         }
@@ -610,34 +583,8 @@ bool Calc::calculateOperation(const uint8_t a_uLeftOperandIndex, const uint8_t a
         if(fRetVal)
         {
             // cast to 64 bits
-            switch(m_eWordSize)
-            {
-            case WS_BYTE:
-            {
-                uResult = (ResultType_t)uResult8;
-                break;
-            }
-            case WS_WORD:
-            {
-                uResult = (ResultType_t)uResult16;
-                break;
-            }
-            case WS_DWORD:
-            {
-                uResult = (ResultType_t)uResult32;
-                break;
-            }
-            case WS_QWORD:
-            {
-                uResult = (ResultType_t)uResult64;
-                break;
-            }
-            default:
-            {
-                // nothing to do
-                qWarning() << "[WRN]Calc::calculateOperation: not supported word size: " << m_eWordSize;
-            }
-            }
+            uResult = castToResultType(m_eWordSize, uResult8, uResult16, uResult32, uResult64);
+
             // fix vectors
             m_vuNumbers[a_uLeftOperandIndex] = uResult;
             m_vuNumbers.remove(a_uRightOperandIndex);
@@ -826,48 +773,21 @@ QString Calc::convertOperationToQString(const Calc::eOperation a_eOperation)
 
 void Calc::calculateRoL(void)
 {
-    uint8_t uResult8 = 0u;
-    uint16_t uResult16 = 0u;
-    uint32_t uResult32 = 0u;
-    uint64_t uResult64 = 0u;
+    ByteWordSize_t uResult8 = 0u;
+    WordWordSize_t uResult16 = 0u;
+    DWordWordSize_t uResult32 = 0u;
+    QWordWordSize_t uResult64 = 0u;
 
     if(0 != m_vuNumbers.size())
     {
-        //              shift to right                   or with left bit which goes to right
-        uResult8  = (((uint8_t) m_vuNumbers.last()) << 1) | (((uint8_t) m_vuNumbers.last()) >> (m_asWordsSizes[WS_BYTE].m_uBitsSize-1));
-        uResult16 = (((uint16_t)m_vuNumbers.last()) << 1) | (((uint16_t) m_vuNumbers.last()) >> (m_asWordsSizes[WS_WORD].m_uBitsSize-1));
-        uResult32 = (((uint32_t)m_vuNumbers.last()) << 1) | (((uint32_t) m_vuNumbers.last()) >> (m_asWordsSizes[WS_DWORD].m_uBitsSize-1));
-        uResult64 = (((uint64_t)m_vuNumbers.last()) << 1) | (((uint64_t) m_vuNumbers.last()) >> (m_asWordsSizes[WS_QWORD].m_uBitsSize-1));
+        //              shift to right                           or with left bit which goes to right
+        uResult8  = (((ByteWordSize_t) m_vuNumbers.last()) << 1) | (((ByteWordSize_t) m_vuNumbers.last()) >> (m_asWordsSizes[WS_BYTE].m_uBitsSize-1));
+        uResult16 = (((WordWordSize_t)m_vuNumbers.last()) << 1) | (((WordWordSize_t) m_vuNumbers.last()) >> (m_asWordsSizes[WS_WORD].m_uBitsSize-1));
+        uResult32 = (((DWordWordSize_t)m_vuNumbers.last()) << 1) | (((DWordWordSize_t) m_vuNumbers.last()) >> (m_asWordsSizes[WS_DWORD].m_uBitsSize-1));
+        uResult64 = (((QWordWordSize_t)m_vuNumbers.last()) << 1) | (((QWordWordSize_t) m_vuNumbers.last()) >> (m_asWordsSizes[WS_QWORD].m_uBitsSize-1));
 
         // cast to 64 bits
-        switch(m_eWordSize)
-        {
-        case WS_BYTE:
-        {
-            m_vuNumbers.last() = (ResultType_t)uResult8;
-            break;
-        }
-        case WS_WORD:
-        {
-            m_vuNumbers.last() = (ResultType_t)uResult16;
-            break;
-        }
-        case WS_DWORD:
-        {
-            m_vuNumbers.last() = (ResultType_t)uResult32;
-            break;
-        }
-        case WS_QWORD:
-        {
-            m_vuNumbers.last() = (ResultType_t)uResult64;
-            break;
-        }
-        default:
-        {
-            // nothing to do
-            qWarning() << "[WRN]Calc::calculateRoL: not supported word size: " << m_eWordSize;
-        }
-        }
+        m_vuNumbers.last() = castToResultType(m_eWordSize, uResult8, uResult16, uResult32, uResult64);
     }
     else
     {
@@ -877,48 +797,21 @@ void Calc::calculateRoL(void)
 
 void Calc::calculateRoR()
 {
-    uint8_t uResult8 = 0u;
-    uint16_t uResult16 = 0u;
-    uint32_t uResult32 = 0u;
-    uint64_t uResult64 = 0u;
+    ByteWordSize_t uResult8 = 0u;
+    WordWordSize_t uResult16 = 0u;
+    DWordWordSize_t uResult32 = 0u;
+    QWordWordSize_t uResult64 = 0u;
 
     if(0 != m_vuNumbers.size())
     {
         //              shift to right                   OR operation with left bit which goes to right
-        uResult8  = (((uint8_t) m_vuNumbers.last()) >> 1) | (((uint8_t) m_vuNumbers.last()) << (m_asWordsSizes[WS_BYTE].m_uBitsSize-1));
-        uResult16 = (((uint16_t)m_vuNumbers.last()) >> 1) | (((uint16_t) m_vuNumbers.last()) << (m_asWordsSizes[WS_WORD].m_uBitsSize-1));
-        uResult32 = (((uint32_t)m_vuNumbers.last()) >> 1) | (((uint32_t) m_vuNumbers.last()) << (m_asWordsSizes[WS_DWORD].m_uBitsSize-1));
-        uResult64 = (((uint64_t)m_vuNumbers.last()) >> 1) | (((uint64_t) m_vuNumbers.last()) << (m_asWordsSizes[WS_QWORD].m_uBitsSize-1));
+        uResult8  = (((ByteWordSize_t) m_vuNumbers.last()) >> 1) | (((ByteWordSize_t) m_vuNumbers.last()) << (m_asWordsSizes[WS_BYTE].m_uBitsSize-1));
+        uResult16 = (((WordWordSize_t)m_vuNumbers.last()) >> 1) | (((WordWordSize_t) m_vuNumbers.last()) << (m_asWordsSizes[WS_WORD].m_uBitsSize-1));
+        uResult32 = (((DWordWordSize_t)m_vuNumbers.last()) >> 1) | (((DWordWordSize_t) m_vuNumbers.last()) << (m_asWordsSizes[WS_DWORD].m_uBitsSize-1));
+        uResult64 = (((QWordWordSize_t)m_vuNumbers.last()) >> 1) | (((QWordWordSize_t) m_vuNumbers.last()) << (m_asWordsSizes[WS_QWORD].m_uBitsSize-1));
 
         // cast to 64 bits
-        switch(m_eWordSize)
-        {
-        case WS_BYTE:
-        {
-            m_vuNumbers.last() = (ResultType_t)uResult8;
-            break;
-        }
-        case WS_WORD:
-        {
-            m_vuNumbers.last() = (ResultType_t)uResult16;
-            break;
-        }
-        case WS_DWORD:
-        {
-            m_vuNumbers.last() = (ResultType_t)uResult32;
-            break;
-        }
-        case WS_QWORD:
-        {
-            m_vuNumbers.last() = (ResultType_t)uResult64;
-            break;
-        }
-        default:
-        {
-            // nothing to do
-            qWarning() << "[WRN]Calc::calculateRoR: not supported word size: " << m_eWordSize;
-        }
-        }
+        m_vuNumbers.last() = castToResultType(m_eWordSize, uResult8, uResult16, uResult32, uResult64);
     }
     else
     {
@@ -938,64 +831,50 @@ void Calc::addValueToMemory()
 {
     if(0 < m_vuNumbers.size())
     {
-        m_vuMemory.push_back(m_vuNumbers.last());
+        m_oMemory.addValue(m_vuNumbers.last());
     }
     else
     {
-        m_vuMemory.push_back(0u);
+        m_oMemory.addValue(0u);
     }
 }
 
-void Calc::removeValueFromMemory(const uint8_t a_uIndex)
+void Calc::increaseValueFromMemory(const MemoryVectorIndex_t a_uIndex)
 {
-    if(a_uIndex < m_vuMemory.size())
+    if(0 < m_vuNumbers.size())
     {
-        m_vuMemory.removeAt(a_uIndex);
+        m_oMemory.increaseValue(a_uIndex, m_vuNumbers.last());
     }
     else
     {
-        qWarning() << "[WRN]Calc::removeValueFromMemory: invalid index value: " << a_uIndex;
+        qWarning() << "[WRN]Calc::increaseValueFromMemory: Empty numbers vector";
     }
 }
 
-void Calc::increaseValueFromMemory(const uint8_t a_uIndex)
+void Calc::decreaseValueFromMemory(const MemoryVectorIndex_t a_uIndex)
 {
-    if(a_uIndex < m_vuMemory.size() &&
-            0 < m_vuNumbers.size())
+    if(0 < m_vuNumbers.size())
     {
-        m_vuMemory[a_uIndex] += m_vuNumbers.last();
+        m_oMemory.decreaseValue(a_uIndex, m_vuNumbers.last());
     }
     else
     {
-        qWarning() << "[WRN]Calc::increaseValueFromMemory: invalid index value: " << a_uIndex << " or empty numbers vector";
+        qWarning() << "[WRN]Calc::decreaseValueFromMemory: Empty numbers vector";
     }
 }
 
-void Calc::decreaseValueFromMemory(const uint8_t a_uIndex)
+MemoryVectorIndex_t Calc::getMemorySize(void)
 {
-    if(a_uIndex < m_vuMemory.size() &&
-            0 < m_vuNumbers.size())
-    {
-        m_vuMemory[a_uIndex] -= m_vuNumbers.last();
-    }
-    else
-    {
-        qWarning() << "[WRN]Calc::decreaseValueFromMemory: invalid index value: " << a_uIndex << " or empty numbers vector";
-    }
+    return m_oMemory.getSize();
 }
 
-uint8_t Calc::getMemorySize(void)
-{
-    return m_vuMemory.size();
-}
-
-QString Calc::getValueFromMemory(const uint8_t a_uIndex)
+QString Calc::getValueFromMemory(const MemoryVectorIndex_t a_uIndex)
 {
     QString qszRetVal = "";
 
-    if(a_uIndex < m_vuMemory.size())
+    if(a_uIndex < m_oMemory.getSize())
     {
-        qszRetVal = convert(m_eNumeralSystem, m_vuMemory[a_uIndex]);
+        qszRetVal = convert(m_eNumeralSystem, m_oMemory.getValue(a_uIndex));
     }
     else
     {
@@ -1007,10 +886,10 @@ QString Calc::getValueFromMemory(const uint8_t a_uIndex)
 
 void Calc::changeSign()
 {
-    uint8_t  uResult8 = 0u;
-    uint16_t uResult16 = 0u;
-    uint32_t uResult32 = 0u;
-    uint64_t uResult64 = 0u;
+    ByteWordSize_t  uResult8 = 0u;
+    WordWordSize_t uResult16 = 0u;
+    DWordWordSize_t uResult32 = 0u;
+    QWordWordSize_t uResult64 = 0u;
 
     if(0 < m_vuNumbers.size())
     {
@@ -1039,34 +918,7 @@ void Calc::changeSign()
         }
 
         // cast to 64 bits
-        switch(m_eWordSize)
-        {
-        case WS_BYTE:
-        {
-            m_vuNumbers.last() = (ResultType_t)uResult8;
-            break;
-        }
-        case WS_WORD:
-        {
-            m_vuNumbers.last() = (ResultType_t)uResult16;
-            break;
-        }
-        case WS_DWORD:
-        {
-            m_vuNumbers.last() = (ResultType_t)uResult32;
-            break;
-        }
-        case WS_QWORD:
-        {
-            m_vuNumbers.last() = (ResultType_t)uResult64;
-            break;
-        }
-        default:
-        {
-            // nothing to do
-            qWarning() << "[WRN]Calc::changeSign: not supported word size: " << m_eWordSize;
-        }
-        }
+        m_vuNumbers.last() = castToResultType(m_eWordSize, uResult8, uResult16, uResult32, uResult64);
     }
     else
     {
@@ -1075,19 +927,19 @@ void Calc::changeSign()
     }
 }
 
-void Calc::copyNumberFromMemory(const Calc::ResultType_t a_uMemoryVectorIndex)
+void Calc::copyNumberFromMemory(const MemoryVectorIndex_t a_uMemoryVectorIndex)
 {
-    if(a_uMemoryVectorIndex < (Calc::ResultType_t)m_vuMemory.size())
+    if(a_uMemoryVectorIndex < m_oMemory.getSize())
     {
         if(0 < m_vuNumbers.size())
         {
             // change last number
-            m_vuNumbers.last() = m_vuMemory[a_uMemoryVectorIndex];
+            m_vuNumbers.last() = m_oMemory.getValue(a_uMemoryVectorIndex);
         }
         else
         {
             // create first number
-            m_vuNumbers.push_back(m_vuMemory[a_uMemoryVectorIndex]);
+            m_vuNumbers.push_back(m_oMemory.getValue(a_uMemoryVectorIndex));
         }
 
         m_eState = S_LAST_VALUE;
@@ -1099,6 +951,11 @@ void Calc::copyNumberFromMemory(const Calc::ResultType_t a_uMemoryVectorIndex)
         // nothing to do
         qWarning() << "[WRN]Calc::changeLastNumber: empty memory vector";
     }
+}
+
+bool Calc::removeValueFromMemory(const MemoryVectorIndex_t a_uIndex)
+{
+    return m_oMemory.removeValue(a_uIndex);
 }
 
 bool Calc::validateBrackets()
@@ -1130,6 +987,41 @@ bool Calc::validateBrackets()
     }
 
     return fRetVal;
+}
+
+ResultType_t Calc::castToResultType(const Calc::eWordSize a_eWordSize, const ByteWordSize_t a_uByteSource, const WordWordSize_t a_uWordSource, const DWordWordSize_t a_uDWordSource, const QWordWordSize_t a_uQWordSource)
+{
+    ResultType_t uDestination = 0u;
+
+    switch(a_eWordSize)
+    {
+    case WS_BYTE:
+    {
+        uDestination = (ResultType_t)a_uByteSource;
+        break;
+    }
+    case WS_WORD:
+    {
+        uDestination = (ResultType_t)a_uWordSource;
+        break;
+    }
+    case WS_DWORD:
+    {
+        uDestination = (ResultType_t)a_uDWordSource;
+        break;
+    }
+    case WS_QWORD:
+    {
+        uDestination = (ResultType_t)a_uQWordSource;
+        break;
+    }
+    default:
+    {
+        qWarning() << "[WRN]Calc::castToResultType: not supported word size: " << a_eWordSize;
+    }
+    }
+
+    return uDestination;
 }
 
 
